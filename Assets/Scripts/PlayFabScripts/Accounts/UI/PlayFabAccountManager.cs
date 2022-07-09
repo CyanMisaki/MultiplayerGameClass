@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using PlayFab;
 using PlayFab.ClientModels;
 using TMPro;
@@ -17,10 +18,27 @@ namespace PlayFabScripts.Accounts.UI
         {
             PlayFabClientAPI.GetAccountInfo(new GetAccountInfoRequest(),
                                             OnGetAccountSuccess,
-                                            OnGetAccountError);
+                                            OnError);
+            PlayFabClientAPI.GetCatalogItems(new GetCatalogItemsRequest(),
+                OnGetCatalogOnSuccess, OnError);
         }
 
-        private void OnGetAccountError(PlayFabError obj)
+        private void OnGetCatalogOnSuccess(GetCatalogItemsResult result)
+        {
+            ShowCatalog(result.Catalog);
+            Debug.Log("CompleteLoadCatalog");
+        }
+
+        private void ShowCatalog(List<CatalogItem> catalog)
+        {
+            foreach (var item in catalog)
+            {
+                if(item.Bundle==null && item.Container==null)
+                    Debug.Log($"Item: {item.ItemId} - {item.DisplayName}");
+            }
+        }
+
+        private void OnError(PlayFabError obj)
         {
             var errorMsg = obj.GenerateErrorReport();
             Debug.LogError(errorMsg);
@@ -30,7 +48,7 @@ namespace PlayFabScripts.Accounts.UI
         {
             var accInfo = result.AccountInfo;
             _titleLabel.text = $"Welcome, {accInfo.Username}, {accInfo.PlayFabId}";
-            _howLongInGameLabel.text = $"In game for: {(DateTime.Now - accInfo.Created).Days.ToString()} days.";
+            _howLongInGameLabel.text = $"In game for: {(DateTime.Now - accInfo.Created).Days.ToString()} day(s).";
         }
     }
 }
