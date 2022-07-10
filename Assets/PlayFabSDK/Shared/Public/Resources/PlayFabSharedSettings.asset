@@ -15,7 +15,7 @@ MonoBehaviour:
   TitleId: 921EC
   DeveloperSecretKey: TMSPSX88G7KKHFROUOM6RD6QXQ9OC1AFSOBQS3WYXN4KZTQ8NB
   ProductionEnvironmentUrl: 
-  RequestType: 2
+  RequestType: 0
   DisableDeviceInfo: 0
   DisableFocusTimeCollection: 0
   RequestTimeout: 2000

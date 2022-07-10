@@ -12,6 +12,8 @@ namespace PlayFabScripts.Accounts.UI
     {
         [SerializeField] private TMP_Text _titleLabel;
         [SerializeField] private TMP_Text _howLongInGameLabel;
+        [SerializeField] private Transform _itemScrollerTransform;
+        [SerializeField] private GameObject _itemScrollerCellPrefab;
 
 
         private void Start()
@@ -33,8 +35,14 @@ namespace PlayFabScripts.Accounts.UI
         {
             foreach (var item in catalog)
             {
-                if(item.Bundle==null && item.Container==null)
+                if (item.Bundle == null && item.Container == null)
+                {
+                    var elementText = Instantiate(_itemScrollerCellPrefab, _itemScrollerTransform).GetComponent<InventoryElementOnStatrScreenView>();
+                    elementText.SetName(item.DisplayName);
+                    elementText.SetDescription(item.Description);
+
                     Debug.Log($"Item: {item.ItemId} - {item.DisplayName}");
+                }
             }
         }
 
