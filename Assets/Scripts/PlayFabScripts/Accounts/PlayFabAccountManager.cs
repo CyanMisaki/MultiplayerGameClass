@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using PlayFab;
 using PlayFab.ClientModels;
 using TMPro;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
-namespace PlayFabScripts.Accounts.UI
+namespace PlayFabScripts.Accounts
 {
     public class PlayFabAccountManager : MonoBehaviour
     {
