@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class InventoryElementOnStatrScreenView : MonoBehaviour
+public class InventoryElementOnStartScreenView : MonoBehaviour
 {
     [SerializeField] private TMP_Text _itemName;
     [SerializeField] private TMP_Text _itemDescription;

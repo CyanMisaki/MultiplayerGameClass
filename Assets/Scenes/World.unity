@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -542,7 +542,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20.25
+  m_fontSize: 31.3
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -919,7 +919,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0.85600007}
-  m_AnchoredPosition: {x: 0, y: 14.991848}
+  m_AnchoredPosition: {x: 0, y: 23.136833}
   m_SizeDelta: {x: 0, y: -29.419783}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1176636512
@@ -1065,7 +1065,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20.25
+  m_fontSize: 31.3
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1272,8 +1272,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c30c412b628fe7f49916107408d55b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rewButton: {fileID: 704849231}
-  _fwdButton: {fileID: 937202485}
+  _rewPressed: {fileID: 704849234}
+  _fwdPressed: {fileID: 937202488}
   _scrollSpeed: 2
   _scrollField: {fileID: 1294527820}
 --- !u!1 &1379269108
@@ -1405,7 +1405,7 @@ MonoBehaviour:
   _titleLabel: {fileID: 385623587}
   _howLongInGameLabel: {fileID: 1196361944}
   _itemScrollerTransform: {fileID: 1176636511}
-  _itemScrollerCellPrefab: {fileID: 1507569476513518951, guid: 27b0f9d1aa046a442abb59e22eba94db, type: 3}
+  _itemScrollerCellPrefab: {fileID: 7467324327088547717, guid: 27b0f9d1aa046a442abb59e22eba94db, type: 3}
 --- !u!114 &1417847702
 MonoBehaviour:
   m_ObjectHideFlags: 0

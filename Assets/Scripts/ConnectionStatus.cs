@@ -1,9 +1,9 @@
 using TMPro;
 using UnityEngine;
-public class ConncetionStatus : MonoBehaviour
+public class ConnectionStatus : MonoBehaviour
 {
    private TMP_Text _status;
-   private PhotonLauncher _launcher;
+   [SerializeField]private PhotonLauncher _launcher;
 
    private void Awake()
    {
