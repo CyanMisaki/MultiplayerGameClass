@@ -85,7 +85,7 @@ namespace PhotonScripts.Connection
                 enterRoomParams.RoomOptions.IsOpen = false;
             
             
-            _lbc.OpCreateRoom(new EnterRoomParams());
+            _lbc.OpCreateRoom(enterRoomParams);
         }
 
         private void Update()
