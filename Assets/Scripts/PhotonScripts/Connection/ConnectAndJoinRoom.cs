@@ -1,10 +1,11 @@
-using System;
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
+using System.Linq;
 using Photon.Pun;
 using Photon.Realtime;
+using PhotonScripts.Rooms;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PhotonScripts.Connection
 {
@@ -12,11 +13,23 @@ namespace PhotonScripts.Connection
     {
         [SerializeField] private ServerSettings _serverSettings;
         [SerializeField] private TMP_Text _stateUiText;
+
+        private const string MONEY_PROP_KEY = "C0";
+        private const string MAP_PROP_KEY = "C1";
         
         private LoadBalancingClient _lbc;
+        private readonly TypedLobby _sqlLobby = new TypedLobby("sqlLobby", LobbyType.SqlLobby);
+        
+        [SerializeField]private RoomScrollerItem _roomScrollerPrefab;
+        [SerializeField] private Transform _roomScrollerParent;
 
-        private const string GAME_MOD_KEY = "gm";
-        private const string AI_MOD_KEY = "ai";
+        [SerializeField] private Button _createRoom;
+        [SerializeField] private Toggle _isClosedRoom;
+        
+        [SerializeField] private Button _createRoomForFriends;
+
+        private List<RoomScrollerItem> _rooms = new();
+        private List<Friends> _friends = new();
 
         private void Start()
         {
@@ -25,6 +38,54 @@ namespace PhotonScripts.Connection
 
             if (!_lbc.ConnectUsingSettings(_serverSettings.AppSettings))
                 Debug.LogError($"Error! Failed to connect");
+            
+            _createRoom.onClick.AddListener(CreateSimpleRoom);
+            _createRoomForFriends.onClick.AddListener(CreateRoomForFriends);
+            
+            //Loading friends from file or other service
+            //sample friends adding
+            _friends.Add(new Friends("Num1", "First friend", "1"));
+            _friends.Add(new Friends("Num2", "Second friend", "2"));
+        }
+
+        private void CreateRoomForFriends()
+        {
+            var expectedFriends = new string[_friends.Count];
+            for (var i = 0; i < _friends.Count; i++)
+            {
+                expectedFriends[i] = _friends[i].UserID;
+            }
+            
+            var enterRoomParams = new EnterRoomParams
+           {
+               RoomName = $"{_lbc.LocalPlayer.NickName} room for friends",
+               RoomOptions =
+               {
+                   MaxPlayers = 4,
+                   IsOpen = false
+               },
+               ExpectedUsers = expectedFriends
+            };
+           
+           _lbc.OpCreateRoom(enterRoomParams);
+        }
+
+        private void CreateSimpleRoom()
+        {
+            var enterRoomParams = new EnterRoomParams
+            {
+                RoomName = $"{_lbc.LocalPlayer.UserId} - simple room",
+                RoomOptions =
+                {
+                    MaxPlayers = 4,
+                }
+            };
+
+            if (_isClosedRoom.isOn)
+                enterRoomParams.RoomOptions.IsOpen = false;
+            
+            
+            _lbc.OpCreateRoom(new EnterRoomParams());
         }
 
         private void Update()
@@ -43,20 +104,7 @@ namespace PhotonScripts.Connection
         public void OnConnectedToMaster()
         {
             Debug.Log($"OnConnectedToMaster");
-           // _lbc.OpJoinRandomRoom();
-          
-           var roomOptions = new RoomOptions
-           {
-               MaxPlayers = 12,
-               CustomRoomProperties = new Hashtable
-               {
-                   {GAME_MOD_KEY,1},
-               }
-           };
-           var enterRoomParams = new EnterRoomParams{RoomOptions = roomOptions};
-           
-           _lbc.OpCreateRoom(enterRoomParams);
-
+            _lbc.OpJoinLobby(TypedLobby.Default);
         }
 
         public void OnDisconnected(DisconnectCause cause)
@@ -81,7 +129,15 @@ namespace PhotonScripts.Connection
 
         public void OnCreatedRoom()
         {
-            Debug.Log($"OnCreatedRoom");
+            var log = $"Room Created:\nRoomName: {PhotonNetwork.CurrentRoom.Name}\n";
+            log += $"Is open: {PhotonNetwork.CurrentRoom.IsOpen}\n";
+            
+            if (PhotonNetwork.CurrentRoom.ExpectedUsers.Length <= 0) return;
+            
+            log += $"Expected users: ";
+            log = PhotonNetwork.CurrentRoom.ExpectedUsers.Aggregate(log, (current, user) => current + $"{user}, ");
+            
+            Debug.Log(log);
         }
 
         public void OnCreateRoomFailed(short returnCode, string message)
@@ -109,6 +165,7 @@ namespace PhotonScripts.Connection
 
         public void OnJoinedLobby()
         {
+            Debug.Log("OnJoinedLobby");
         }
 
         public void OnLeftLobby()
@@ -117,6 +174,38 @@ namespace PhotonScripts.Connection
 
         public void OnRoomListUpdate(List<RoomInfo> roomList)
         {
+            Debug.Log("OnRoomListUpdate");
+            ClearRooms();
+            
+            foreach (var room in roomList)
+            {
+                var elementRoom = Instantiate(_roomScrollerPrefab, _roomScrollerParent);
+                elementRoom.SetRoomInfo(room.Name, room.MaxPlayers.ToString(), room.PlayerCount.ToString());
+                elementRoom._onConnectButtonPressed += ConnectToSelectedRoom;
+                _rooms.Add(elementRoom);
+            }
+        }
+
+        private void ConnectToSelectedRoom(string roomName)
+        {
+            _lbc.OpJoinRoom(new EnterRoomParams
+            {
+                RoomName = roomName
+            });
+        }
+
+        private void ClearRooms()
+        {
+            if (_rooms.Count!=0)
+            {
+                foreach (var room in _rooms)
+                {
+                    room._onConnectButtonPressed -= ConnectToSelectedRoom;
+                    Destroy(room.gameObject);
+                }
+            }
+
+            _rooms?.Clear();
         }
 
         public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
@@ -125,6 +214,9 @@ namespace PhotonScripts.Connection
         
         private void OnDestroy()
         {
+            ClearRooms();
+            _createRoom.onClick.RemoveAllListeners();
+            _friends.Clear();
             _lbc.RemoveCallbackTarget(this);
         }
     }
