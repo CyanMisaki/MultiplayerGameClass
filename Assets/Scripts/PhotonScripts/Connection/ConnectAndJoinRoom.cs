@@ -55,15 +55,17 @@ namespace PhotonScripts.Connection
             {
                 expectedFriends[i] = _friends[i].UserID;
             }
+
+            var roomOptions = new RoomOptions
+            {
+                MaxPlayers = 4,
+                IsOpen = false
+            };
             
             var enterRoomParams = new EnterRoomParams
            {
                RoomName = $"{_lbc.LocalPlayer.NickName} room for friends",
-               RoomOptions =
-               {
-                   MaxPlayers = 4,
-                   IsOpen = false
-               },
+               RoomOptions = roomOptions,
                ExpectedUsers = expectedFriends
             };
            
@@ -72,18 +74,19 @@ namespace PhotonScripts.Connection
 
         private void CreateSimpleRoom()
         {
+            var roomOptions = new RoomOptions
+            {
+                MaxPlayers = 4,
+            };
+            
+            if (_isClosedRoom.isOn)
+                roomOptions.IsOpen = false;
+            
             var enterRoomParams = new EnterRoomParams
             {
                 RoomName = $"{_lbc.LocalPlayer.UserId} - simple room",
-                RoomOptions =
-                {
-                    MaxPlayers = 4,
-                }
+                RoomOptions = roomOptions
             };
-
-            if (_isClosedRoom.isOn)
-                enterRoomParams.RoomOptions.IsOpen = false;
-            
             
             _lbc.OpCreateRoom(enterRoomParams);
         }
@@ -129,14 +132,15 @@ namespace PhotonScripts.Connection
 
         public void OnCreatedRoom()
         {
-            var log = $"Room Created:\nRoomName: {PhotonNetwork.CurrentRoom.Name}\n";
-            log += $"Is open: {PhotonNetwork.CurrentRoom.IsOpen}\n";
-            
-            if (PhotonNetwork.CurrentRoom.ExpectedUsers.Length <= 0) return;
-            
-            log += $"Expected users: ";
-            log = PhotonNetwork.CurrentRoom.ExpectedUsers.Aggregate(log, (current, user) => current + $"{user}, ");
-            
+            var log = $"Room Created:\nRoomName: {_lbc.CurrentRoom.Name}\n";
+            log += $"Is open: {_lbc.CurrentRoom.IsOpen}\n";
+
+            if (_lbc.CurrentRoom.ExpectedUsers != null)
+            {
+                log += $"Expected users: ";
+                log = _lbc.CurrentRoom.ExpectedUsers.Aggregate(log, (current, user) => current + $"{user}, ");
+            }
+
             Debug.Log(log);
         }
 
