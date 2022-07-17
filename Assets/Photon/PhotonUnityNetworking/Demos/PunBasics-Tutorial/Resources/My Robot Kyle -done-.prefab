@@ -493,7 +493,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98fac77b304554f238a61572f5720187, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health: 1
   playerUiPrefab: {fileID: 170056, guid: e41946a981c3b444a84d15eb7c608ca4, type: 3}
   beams: {fileID: 170262}
 --- !u!114 &11400008
@@ -568,7 +567,7 @@ MonoBehaviour:
   distance: 7
   height: 6
   centerOffset: {x: 0, y: 2, z: 0}
-  followOnStart: 0
+  followOnStart: 1
   smoothSpeed: 1
 --- !u!114 &11413802
 MonoBehaviour:

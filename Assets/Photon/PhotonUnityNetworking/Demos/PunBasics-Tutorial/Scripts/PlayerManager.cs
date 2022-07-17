@@ -8,7 +8,7 @@
 // <author>developer@exitgames.com</author>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,8 +24,8 @@ namespace Photon.Pun.Demo.PunBasics
     {
         #region Public Fields
 
-        [Tooltip("The current Health of our player")]
-        public float Health = 1f;
+        [field: Tooltip("The current Health of our player")]
+        public float Health { get; private set; }
 
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
@@ -41,7 +41,7 @@ namespace Photon.Pun.Demo.PunBasics
         [Tooltip("The Beams GameObject to control")]
         [SerializeField]
         private GameObject beams;
-
+        
         //True, when the user is firing
         bool IsFiring;
 
@@ -61,8 +61,11 @@ namespace Photon.Pun.Demo.PunBasics
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
         /// </summary>
+        /// <param name="playFabInGameLogin"></param>
+        
         public void Awake()
         {
+            Health = 1;
             if (this.beams == null)
             {
                 Debug.LogError("<Color=Red><b>Missing</b></Color> Beams Reference.", this);
@@ -87,10 +90,11 @@ namespace Photon.Pun.Demo.PunBasics
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity during initialization phase.
         /// </summary>
+
         public void Start()
         {
             CameraWork _cameraWork = gameObject.GetComponent<CameraWork>();
-
+            
             if (_cameraWork != null)
             {
                 if (photonView.IsMine)
@@ -106,8 +110,9 @@ namespace Photon.Pun.Demo.PunBasics
             // Create the UI
             if (this.playerUiPrefab != null)
             {
-                GameObject _uiGo = Instantiate(this.playerUiPrefab);
+                var _uiGo = Instantiate(this.playerUiPrefab);
                 _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+                _uiGo.GetComponent<PlayFabInGameLogin>().SetPlayerHealth(GetHealthFromPlayFab);
             }
             else
             {
@@ -120,12 +125,17 @@ namespace Photon.Pun.Demo.PunBasics
             #endif
         }
 
+        private void GetHealthFromPlayFab(int health)
+        {
+            Health = health;
+        }
 
-		public override void OnDisable()
+
+        public override void OnDisable()
 		{
 			// Always call the base to remove callbacks
 			base.OnDisable ();
-
+            
 			#if UNITY_5_4_OR_NEWER
 			UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
 			#endif
@@ -147,7 +157,7 @@ namespace Photon.Pun.Demo.PunBasics
 
                 if (this.Health <= 0f)
                 {
-                    GameManager.Instance.LeaveRoom();
+                    //GameManager.Instance.LeaveRoom();
                 }
             }
 
@@ -228,7 +238,6 @@ namespace Photon.Pun.Demo.PunBasics
             {
                 transform.position = new Vector3(0f, 5f, 0f);
             }
-
             GameObject _uiGo = Instantiate(this.playerUiPrefab);
             _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
         }

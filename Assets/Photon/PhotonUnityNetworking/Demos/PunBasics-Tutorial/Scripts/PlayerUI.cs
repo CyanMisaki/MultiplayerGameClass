@@ -37,6 +37,9 @@ namespace Photon.Pun.Demo.PunBasics
 	    
 	    [SerializeField]
 	    private Text _idText;
+	    
+	    [SerializeField]
+	    private Text _healthText;
 
         PlayerManager target;
 
@@ -84,6 +87,7 @@ namespace Photon.Pun.Demo.PunBasics
 			}
 
 			_idText.text = target.ID.ToString();
+			_healthText.text = target.Health.ToString();
 		}
 
 		/// <summary>
